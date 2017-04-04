@@ -48,12 +48,22 @@ extension JSContext {
             
             return try String(contentsOf: url)
         }
+        
+        fileprivate func run(in context: JSContext) -> JSValue! {
+            return context.evaluateScript(rawValue)
+        }
     }
     
     /**
      */
     public func evaluate(script: Script, in bundle: Bundle = .main) throws -> JSValue! {
         return evaluateScript(try script.load(in: bundle))
+    }
+    
+    /**
+     */
+    public func execute(script: Script) -> JSValue! {
+        return script.run(in: self)
     }
 
     /**

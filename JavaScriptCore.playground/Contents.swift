@@ -11,7 +11,7 @@ guard let context = JSContext() else {
 // Register an error handler callback
 //------------------------------------------------------------------------------
 context.exceptionHandler = {
-    if let context = $0.0, let value = $0.1 {
+    if let context = $0, let value = $1 {
         print("\(context)"); print("\(value)")
     }
 }
@@ -19,8 +19,8 @@ context.exceptionHandler = {
 
 // Define a JavaScript function, 'log'
 //------------------------------------------------------------------------------
-let log: @convention(block) () -> () = { _ in
-    print("\((JSContext.currentArguments().reduce("") { $0.0 + "\($0.1)" }))")
+let log: @convention(block) () -> () = {
+    print("\((JSContext.currentArguments().reduce("") { $0 + "\($1)" }))")
 }
 context.define("log", as: log)
 
@@ -54,3 +54,16 @@ if let factorial = try? context.value("factorial")
 if let time = try? context.value("time") {
     print("Time: \(time)")
 }
+
+// Other fun things with 'moment' & JSContext
+//------------------------------------------------------------------------------
+if let moment = try? context.value("moment") {
+    if let time = moment.call(withArguments: ["20180101", "YYYYMMDD"]) {
+        print("Time: \(time)")
+        
+        if let fromNow = time.invokeMethod("fromNow", withArguments: []) {
+            print("From Now: \(fromNow)")
+        }
+    }
+}
+
